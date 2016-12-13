@@ -5,6 +5,8 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"io"
 	"log"
 	"net"
@@ -15,12 +17,25 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
+const version = "0.0.1"
+
+var printVersion bool
+
+func init() {
+	flag.BoolVar(&printVersion, "v", false, "print version and exit")
+	flag.Parse()
+}
+
 type config struct {
 	BindAddress    string `envconfig:"BIND_ADDRESS" default:":9000"`
 	HipacheAddress string `envconfig:"HIPACHE_ADDRESS" required:"true"`
 }
 
 func main() {
+	if printVersion {
+		fmt.Printf("hipache-healthcheck-proxy %s\n", version)
+		return
+	}
 	var c config
 	err := envconfig.Process("", &c)
 	if err != nil {
